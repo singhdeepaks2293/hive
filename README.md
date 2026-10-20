@@ -1,6 +1,7 @@
 # hive
 Resistance is futile
 
+```
           Events (syslog, SNMP traps)     Humans (chat, approvals)
                      │                              │
               ┌──────▼──────────────────────────────▼─────┐
@@ -24,3 +25,4 @@ Resistance is futile
               └──────┬──────────────────┘
                      │
                   Devices
+```
