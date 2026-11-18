@@ -1,0 +1,83 @@
+
+==============================================================================
+ACT 1  Assimilation: map, observe, compare against intent
+==============================================================================
+[  0.1s] queen-prime leads; 9 drones joined; intent git:intent@2f30fad
+[  0.3s] ie-sw2 drifted from intent. Intent drone proposed:
+           no ntp server 10.0.0.9
+           ntp server 10.0.0.1
+           interface Gi1/0/1
+            description ring-1 to ie-sw3
+[  0.3s] Guardian verified it; rollback plan has 4 lines. Change is waiting for a human.
+
+==============================================================================
+ACT 2  Chaos: ring link ie-sw2 Gi1/0/1 <-> ie-sw3 Gi1/0/2 fails, ie-sw4 Gi1/0/5 flaps
+==============================================================================
+
+==============================================================================
+ACT 3  Order: signals into incidents, incidents to the right drones
+==============================================================================
+[  0.3s] 25 signals in -> 3 incidents
+[  0.3s] incident fault:rep-segment:1: 4 signals (0 suppressed), devices ie-sw2, ie-sw3
+           tshoot.interface   -> Four of Nine, Tshoot  [succeeded]
+           collect.show       -> One of Nine, Sense  [succeeded]
+           tshoot.rep         -> Five of Nine, Tshoot (REP/PTP)  [succeeded]
+           finding (0.85): REP segment 1 is open: physical link down between ie-sw2 Gi1/0/1 and ie-sw3 Gi1/0/2; the ring is running on its alternate path with no redundancy left
+           advice: check optics and cabling on ie-sw2 Gi1/0/1 / ie-sw3 Gi1/0/2. Do NOT change any other member of segment 1 until it is COMPLETE again: a second failure partitions the ring
+[  0.3s] incident fault:ptp-domain:0: 1 signals (0 suppressed), devices ie-sw3
+           tshoot.ptp         -> Five of Nine, Tshoot (REP/PTP)  [succeeded]
+           finding (0.8): PTP HOLDOVER offset 2600ns (domain 0) because REP segment 1 open: ie-sw2 Gi1/0/1, ie-sw3 Gi1/0/2 failed: the timing path moved when the ring reconverged, and this clock lost its master
+           advice: fix the ring first. PTP should relock on its own once the segment is COMPLETE; if offset stays high after that, check the boundary clock on the new path
+[  0.3s] incident fault:device:ie-sw4 STORM: 20 signals (18 suppressed), devices ie-sw4
+           tshoot.interface   -> Four of Nine, Tshoot  [succeeded]
+           collect.show       -> One of Nine, Sense  [succeeded]
+           finding (0.7): Gi1/0/5 is up but has 740 CRC errors, consistent with flapping on a bad optic or cable
+           advice: replace or reseat the optic/cable; check duplex and speed
+
+==============================================================================
+ACT 4  Consent: identities, roles, and a change that waits for the ring
+==============================================================================
+[  0.3s] intern tried to approve: refused (intern lacks role netops-approver)
+[  0.3s] forged tried to approve: refused (unauthenticated)
+[  0.3s] manish approved.
+[  0.4s] change 9975f1484413: open incident f9db4375117b on ptp-domain:0
+[  0.4s] a technician replaces the optic; the ring closes
+[  2.8s] REP incident closed, change ran: pre-check, apply under rollback timer, soak, post-check, confirm
+[  2.8s] ie-sw2 now matches intent.
+
+==============================================================================
+ACT 5  GitOps: 'add camera VLAN 30 on every ring-1 switch'
+==============================================================================
+[  2.8s] pull request pr/1 opened by manish for ie-sw1, ie-sw2, ie-sw3, ie-sw4
+[  2.8s] manish tried to approve his own PR: authors cannot approve their own pull request
+[  2.8s] deepak approved, PR merged -> intent git:intent@7cb33be
+[  3.5s] canary ie-sw1 applied; PR approval counted for git:deepak
+[  3.5s] deepak hit the freeze switch
+[  4.3s]   ie-sw2: freeze switch on (deepak: plant shift change, hold all changes)
+[  4.3s] freeze lifted
+[  4.7s] queen-prime crashed mid-rollout (lease left to expire)
+[  5.7s] queen-secundus ascended and carries on from the blackboard
+[  6.1s] rollout order (one ring member at a time, canary first):
+           16:49:34.770  ie-sw1
+           16:49:35.895  ie-sw2
+           16:49:37.027  ie-sw3
+           16:49:37.351  ie-sw4
+
+==============================================================================
+ACT 6  Report
+==============================================================================
+[  6.1s] gateway refused a tshoot drone trying to write config: Four of Nine, Tshoot may not write to devices
+[  6.1s] gateway refused a tshoot drone trying to pipe a show: command not allowlisted: 'show run | inc pass'
+[  6.1s] gateway: 249 calls, 10 writes (all by the Deployer), 2 denied
+[  6.1s] changes: 5 applied, 5 total; audit trail: 266 records
+           One of Nine, Sense                 handled 6
+           Two of Nine, Map                   handled 4
+           Three of Nine, Sentinel            handled 0, reported 1 deviations
+           Four of Nine, Tshoot               handled 2
+           Five of Nine, Tshoot (REP/PTP)     handled 2
+           Six of Nine, Intent                handled 6
+           Seven of Nine, Guardian            handled 5
+           Eight of Nine, Deployer            handled 5
+           Nine of Nine, Builder              handled 0
+
+Resistance is futile.

@@ -1,0 +1,30 @@
+# hive settings. Copy to config/hive.yaml and adjust. Every key is optional;
+# defaults live in queen/models.py (QueenConfig) and queen/consent.py (ConsentPolicy).
+
+queen:
+  leader_ttl_s: 10            # a Queen that stops renewing is replaced after this
+  dedup_window_s: 30
+  storm_threshold: 10         # identical events inside storm_window_s -> storm
+  storm_window_s: 60
+  correlation_window_s: 120   # signals in the same failure domain join one incident
+  lease_ttl_s: 120
+  max_attempts: 3             # read-only work only; changes are never retried
+  device_concurrency: 2
+  drone_ttl_s: 60
+  sever_after: 3
+  sever_s: 300
+  drift_interval_s: 300
+  observed_ttl_s: 900
+  canary_soak_s: 600          # first device of a rollout soaks this long before the rest
+  change_windows:             # empty list = always open
+    - days: [0, 1, 2, 3]      # Mon-Thu nights, plant time
+      start: "22:00"
+      end: "04:00"
+      tz: Asia/Kolkata
+
+consent:
+  approver_role: netops-approver
+  approvals_required: 1
+  forbid_self_approval: true
+  vote_ttl_s: 3600
+  change_ttl_s: 86400

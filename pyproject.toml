@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hive-netops"
+version = "0.2.0"
+description = "A Borg-style collective of agents that keeps networks stable, troubleshoots, and deploys from intent."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.5", "pyyaml>=6"]
+
+[project.optional-dependencies]
+netmiko = ["netmiko>=4.3", "ntc-templates>=4"]
+dev = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["queen", "drones", "netskills"]
+py-modules = ["hive_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

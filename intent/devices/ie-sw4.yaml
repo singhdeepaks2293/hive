@@ -1,0 +1,16 @@
+# Intent for ie-sw4. Keys use netskills/normalize.py form:
+#   top level: '<setting>'   in a section: '<section>|<setting>'
+device: ie-sw4
+platform: cisco_ie
+site: plant-a
+config:
+  hostname: ie-sw4
+  ntp server: 10.0.0.1
+  logging host: 10.0.0.50
+  snmp-server location: plant-a/cell-4
+  interface Gi1/0/1|description: ring-1 to ie-sw1
+  interface Gi1/0/1|rep segment: '1'
+  interface Gi1/0/2|description: ring-1 to ie-sw3
+  interface Gi1/0/2|rep segment: '1'
+  interface Gi1/0/5|description: cell-camera-1
+  interface Gi1/0/5|switchport access vlan: '20'
